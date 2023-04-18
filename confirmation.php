@@ -20,7 +20,7 @@ if(isset($_POST["send"])){
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
-    $mail->setFrom('fbyrron19@gmail.com', 'Carpool App');
+    $mail->setFrom('Carpool App');
 
     $mail->addAddress($_POST["user_Email"]);
 
