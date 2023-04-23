@@ -51,7 +51,7 @@
 
 
     <div>
-        <button class="py-2 px-3 bg-blue-500 text-white rounded-xl"><a href="index.html">Register a User</a></button>
+        <button class="py-2 px-3 mb-20 bg-blue-500 text-white rounded-xl"><a href="index.html">Register a User</a></button>
     </div>
 </body>
 </html>

@@ -15,12 +15,12 @@ if(isset($_POST["send"])){
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'fbyrron19@gmail.com';
-    $mail->Password = 'vfzkhhhnwcgfeazm';
+    $mail->Username = 'sesame13579@gmail.com';
+    $mail->Password = 'fheiucndptntxkhe';
     $mail->SMTPSecure = 'ssl';
     $mail->Port = 465;
 
-    $mail->setFrom('Carpool App');
+    $mail->setFrom('sesame13579@gmail.com', 'Carpool App');
 
     $mail->addAddress($_POST["user_Email"]);
 
