@@ -1,4 +1,5 @@
 <?php
+session_start(); // Move session_start() function to the beginning of your PHP code
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -10,6 +11,29 @@ require 'phpmailer/src/SMTP.php';
 
 
 if(isset($_POST["send"])){
+    $conn = new mysqli('localhost', 'root', '', 'carpool');
+
+    if($conn->connect_error){
+        die('Connection Failed: '.$conn->connect_error);
+    }
+
+    // Check if email already exists in database
+    $stmt = $conn->prepare("SELECT user_Email FROM user WHERE user_Email = ?");
+    $stmt->bind_param("s", $_POST['user_Email']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result->num_rows > 0){
+        // Email already exists, show error message and exit script
+        echo "<script>alert('Email already exists. Please use a different email.');</script>";
+        exit();
+    }else{
+        // Email doesn't exist, proceed with sending email and saving user data
+        $mail = new PHPMailer(true);
+        // Rest of the email sending code goes here...
+    }
+
+    
     $mail = new PHPMailer(true);
 
     $mail->isSMTP();
@@ -30,17 +54,15 @@ if(isset($_POST["send"])){
     $mail_template ="
     <h2>Carpool App</h2>
     Good day, you only have one step to use the app. Click the link below to finalize the Carpool App Registration.<br>
-    <a href='http://localhost/carpool/register_.php' >Verifying Email Address</a>";
+    <a href='http://localhost/carpool/register_.php'>Verifying Email Address</a>";
 
     $mail->Body = $mail_template;
     $mail->send();
 
-    echo
-    "
-    <script>
-    alert('Check your email to verify your registration');
-    document.location.list.php = list.php
-    </script>
+    echo "
+        <script>
+            alert('Check your email to verify your registration');
+        </script>
     ";
 
     $user_Type = $_POST['user_Type'];
@@ -50,9 +72,6 @@ if(isset($_POST["send"])){
     $user_LastName = $_POST['user_LastName'];
     $user_ContactNumber = $_POST['user_ContactNumber'];
     
-    //Database Connection
-    session_start();
-
     // Store the variables in the session
     $_SESSION['user_Type'] = $user_Type;
     $_SESSION['user_Email'] = $user_Email;
@@ -66,4 +85,3 @@ if(isset($_POST["send"])){
 
 }
 ?>
-
