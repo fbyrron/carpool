@@ -10,13 +10,8 @@ if (isset($_POST['save_edit'])) {
   $updated_email = $_POST['email'];
   $updated_contact_number = $_POST['phone'];
 
-  // perform validation on the user input
-  // ...
-  
-  // connect to the database
   $conn = mysqli_connect("localhost", "root", "", "carpool");
   
-  // update the user's information in the database
   $ID = $_SESSION['login_ID'];
   
   $update_query = "UPDATE user SET user_FirstName='$updated_first_name', user_LastName='$updated_last_name', user_Email='$updated_email', user_ContactNumber='$updated_contact_number' WHERE user_ID = '$ID'";
