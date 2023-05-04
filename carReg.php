@@ -1,54 +1,81 @@
 <?php
-// Step 1: Create a database table to store the information submitted from the form
-// You can use any database management system to create the table. Here's an example SQL statement to create a table named "car_registration":
-/*
-CREATE TABLE car_registration (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    car_make_model VARCHAR(50) NOT NULL,
-    car_color VARCHAR(20) NOT NULL,
-    car_plate_number VARCHAR(20) NOT NULL,
-    user_first_name VARCHAR(30) NOT NULL,
-    user_last_name VARCHAR(30) NOT NULL,
-    d_license_number VARCHAR(20) NOT NULL,
-    user_contact_number VARCHAR(20) NOT NULL,
-    registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)
-*/
-
-// Step 2: Connect to the database using PHP
+session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "carpool";
+$user_ID = $_SESSION['login_ID'];
+$d_ID = $_SESSION['login_ID'];
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
 // Step 3: Retrieve the form data using PHP $_POST variable
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (isset($_POST['regCar'])) {
     $car_MakeModel = $_POST["car_MakeModel"];
     $car_Color = $_POST["car_Color"];
+    $car_Year = $_POST["car_Year"];
     $car_PlateNumber = $_POST["car_PlateNumber"];
-    $car_OwnerName = $_POST["car_OwnerName"];
-    $car_OwnerLicense = $_POST["car_OwnerLicense"];
-    $car_OwnerContactNo = $_POST["car_OwnerContactNo"];
+    $car_ChasisNumber = $_POST["car_ChasisNumber"];
+    $owner_ID = $user_ID;
+    $user_Type = $_SESSION['login_Type'];
+    $verificationStat = 'Pending';
 
-    // Step 5: Insert the data into the database table using a SQL INSERT statement
-    $sql = "INSERT INTO car (car_MakeModel, car_Color, car_PlateNumber, car_OwnerName, car_OwnerLicense, car_OwnerContactNo)
-            VALUES ('$car_MakeModel', '$car_Color', '$car_PlateNumber', '$car_OwnerName', '$car_OwnerLicense', '$car_OwnerContactNo')
-            
-            ";
+    // Step 4: Prepare a SQL statement with parameters
+    $stmt = $conn->prepare("INSERT INTO car (car_MakeModel, car_Color, car_PlateNumber, car_ChasisNumber, car_Year, user_ID, d_ID, verificationStat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-    if ($conn->query($sql) === TRUE) {
+    if (!$stmt) {
+        die("Error: " . $conn->error);
+    }
+
+    // Step 5: Bind the parameters to the statement
+    $stmt->bind_param("ssssssss", $car_MakeModel, $car_Color, $car_PlateNumber, $car_ChasisNumber, $car_Year, $owner_ID, $d_ID, $verificationStat);
+
+    // Step 6: Execute the statement
+    if ($stmt->execute()) {
         echo "<script>alert('New record created successfully')</script>";
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Error: " . $stmt->error;
     }
-    header("Location: carList.php"); 
+
+    // Step 7: Close the statement
+    $stmt->close();
+
+    // Step 8: Update the user type if it is "Passenger"
+    if ($user_Type == "Passenger") {
+        // Prepare the update query
+        $driver = 'Driver';
+        $update_query = "UPDATE user SET user_Type='$driver' WHERE user_ID=?";
+
+        // Prepare the statement
+        $stmt = $conn->prepare($update_query);
+
+        if (!$stmt) {
+            die("Error: " . $conn->error);
+        }
+
+        // Bind the parameter to the statement
+        $stmt->bind_param("s", $owner_ID);
+
+        // Execute the statement
+        if ($stmt->execute()) {
+            $_SESSION['login_Type'] = $driver;
+            echo "User type updated successfully";
+        } else {
+            echo "Error updating user type: " . $stmt->error;
+        }
+
+        // Close the statement
+        $stmt->close();
+    }
+
+    // Step 9: Close the connection
     $conn->close();
+
+    header("Location: carList.php"); 
+    exit();
 }
 ?>
