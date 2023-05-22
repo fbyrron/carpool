@@ -26,7 +26,7 @@
 
         <input type="submit" value="Login"><br><br><br>
 
-        <div id="dont"><p></p>Don't have an Account?</p><a href="userReg.html">Register Here</a></div>
+        <div id="dont"><p></p>Don't have an Account?</p><a href="userReg.php">Register Here</a></div>
     </form>
 
     <script src="login.php"></script>

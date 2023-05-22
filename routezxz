@@ -1,0 +1,6 @@
+register a route
+
+if verificationStat == 'Approve'
+    makakapagregiter
+else
+    your car needs to be verified first

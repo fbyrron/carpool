@@ -1,6 +1,5 @@
 <?php
-// start the session
-session_start();
+include 'database.php';
 
 // check if the save button is clicked
 if (isset($_POST['save_edit'])) {
@@ -10,8 +9,8 @@ if (isset($_POST['save_edit'])) {
   $updated_email = $_POST['email'];
   $updated_contact_number = $_POST['phone'];
 
-  $conn = mysqli_connect("localhost", "root", "", "carpool");
-  
+  $conn = new mysqli($servername, $username, $password, $dbname);
+
   $ID = $_SESSION['login_ID'];
   
   $update_query = "UPDATE user SET user_FirstName='$updated_first_name', user_LastName='$updated_last_name', user_Email='$updated_email', user_ContactNumber='$updated_contact_number' WHERE user_ID = '$ID'";

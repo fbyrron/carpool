@@ -1,6 +1,4 @@
 <?php
-session_start(); // Move session_start() function to the beginning of your PHP code
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -8,11 +6,11 @@ use PHPMailer\PHPMailer\Exception;
 require 'phpmailer/src/Exception.php';
 require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
+include 'database.php';
 
 
 if(isset($_POST["send"])){
-    $conn = new mysqli('localhost', 'root', '', 'carpool');
-
+    $conn = new mysqli($servername, $username, $password, $dbname);
     if($conn->connect_error){
         die('Connection Failed: '.$conn->connect_error);
     }
@@ -31,41 +29,37 @@ if(isset($_POST["send"])){
         // Email doesn't exist, proceed with sending email and saving user data
         $mail = new PHPMailer(true);
         // Rest of the email sending code goes here...
-    }
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'sesame13579@gmail.com';
+        $mail->Password = 'fheiucndptntxkhe';
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port = 465;
+        
+        $mail->setFrom('sesame13579@gmail.com', 'Carpool App');
+        
+        $mail->addAddress($_POST["user_Email"]);
 
-    
-    $mail = new PHPMailer(true);
+        $mail->isHTML(true);
 
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'sesame13579@gmail.com';
-    $mail->Password = 'fheiucndptntxkhe';
-    $mail->SMTPSecure = 'ssl';
-    $mail->Port = 465;
-
-    $mail->setFrom('sesame13579@gmail.com', 'Carpool App');
-
-    $mail->addAddress($_POST["user_Email"]);
-
-    $mail->isHTML(true);
-
-    $mail->Subject = "User Registration";
-    $mail_template ="
+        $mail->Subject = "User Registration";
+        $mail_template ="
     <h2>Carpool App</h2>
     Good day, you only have one step to use the app. Click the link below to finalize the Carpool App Registration.<br>
     <a href='http://localhost/carpool/register_.php'>Verifying Email Address</a>";
 
     $mail->Body = $mail_template;
     $mail->send();
-
+    $_SESSION['registered'] = "Your registration has been successful. Please check your email to verify your account";
+    
     echo "
-        <script>
+    <script>
             alert('Check your email to verify your registration');
         </script>
     ";
-
-    $user_Type = $_POST['user_Type'];
+    
+    $user_Type = 'Passenger';
     $user_Email = $_POST['user_Email'];
     $user_Password = $_POST['user_Password'];
     $user_FirstName = $_POST['user_FirstName'];
@@ -81,7 +75,9 @@ if(isset($_POST["send"])){
     $_SESSION['user_ContactNumber'] = $user_ContactNumber;
     
     // Redirect to the new page
+    header('Location: userReg.php');
     exit();
-
+    
+}
 }
 ?>

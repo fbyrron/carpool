@@ -1,3 +1,5 @@
+<?php include 'database.php'; ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +25,8 @@
             </tr>
 
             <?php
-            $conn= mysqli_connect('localhost', 'root', '', 'carpool');
+
+            $conn = new mysqli($servername, $username, $password, $dbname);
             $sql = "SELECT user_Type, user_Email, user_FirstName, user_LastName, user_ContactNumber FROM user;";
             $result = $conn->query($sql);
 

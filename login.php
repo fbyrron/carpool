@@ -1,14 +1,7 @@
 <?php
-// Start the session
-session_start();
+include 'database.php';
+$conn = new mysqli($servername, $username, $password, $dbname);
 
-// Connect to database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "carpool";
-
-$conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
   die("Connection failed: " . mysqli_connect_error());
 }
@@ -50,9 +43,10 @@ if (mysqli_num_rows($result) > 0) {
   $_SESSION['login_FirstName'] = $row['user_FirstName'];
   $_SESSION['login_LastName'] = $row['user_LastName'];
   $_SESSION['login_ContactNumber'] = $row['user_ContactNumber'];
+  $_SESSION['login_Balance'] = $row['user_AccBalance'];
   
   // Redirect to homepage
-  header('Location: home.html');
+  header('Location: home.php');
   exit();
 } else {
   // Email and password are invalid, display error message

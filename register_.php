@@ -1,14 +1,16 @@
 <?php
-session_start();
+include 'database.php';
+
 $user_Type = $_SESSION['user_Type'];
 $user_Email = $_SESSION['user_Email'];
 $user_Password = $_SESSION['user_Password'];
 $user_FirstName = $_SESSION['user_FirstName'];
 $user_LastName = $_SESSION['user_LastName'];
 $user_ContactNumber = $_SESSION['user_ContactNumber'];
+$freeTix = 10;
 
-// Database Connection
-$conn = new mysqli('localhost', 'root', '', 'carpool');
+$conn = new mysqli($servername, $username, $password, $dbname);
+
 if ($conn->connect_error) {
     die('Connection Failed: ' . $conn->connect_error);
 } else {
@@ -23,14 +25,15 @@ if ($conn->connect_error) {
         echo "Email already registered.";
     } else {
         // Email does not exist, insert user data
-        $stmt = $conn->prepare("INSERT INTO user(user_Type, user_Email, user_Password, user_FirstName, user_LastName, user_ContactNumber) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssss", $user_Type, $user_Email, $user_Password, $user_FirstName, $user_LastName, $user_ContactNumber);
+        $stmt = $conn->prepare("INSERT INTO user(user_Type, user_Email, user_Password, user_FirstName, user_LastName, user_ContactNumber, user_AccBalance) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssd", $user_Type, $user_Email, $user_Password, $user_FirstName, $user_LastName, $user_ContactNumber, $freeTix);
         $stmt->execute();
         $stmt->close();
         $conn->close();
-        header("Location: list.php"); 
-        exit();
         echo "Carpool Registration Successful";
+        
+        header("Location: index.php"); 
+        exit();
     }
 }
 ?>

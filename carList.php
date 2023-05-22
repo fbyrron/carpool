@@ -1,10 +1,6 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "carpool";
+include 'database.php';
 
-session_start();
 $ID = $_SESSION['login_ID'];
 $ownerFN = $_SESSION['login_FirstName'];
 $ownerLN = $_SESSION['login_LastName'];
@@ -26,7 +22,7 @@ $result = $conn->query($sql);
 <html>
 <head>
     <link rel="stylesheet" href="style.css">
-    <title>Car Registration List</title>
+    <title>Registered Car List</title>
     <style>
         #verification {
             background-color: #5ba9c3;
@@ -38,6 +34,7 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body onload="verification()">
+<?php include 'navbar.php'; ?>
 <h1>Car Registration List</h1>
 <table>
     <tr>

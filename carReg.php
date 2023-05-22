@@ -1,81 +1,37 @@
-<?php
-session_start();
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "carpool";
-$user_ID = $_SESSION['login_ID'];
-$d_ID = $_SESSION['login_ID'];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <?php
+    include 'database.php';
+    include 'navbar.php';
+    ?>
+    <h1>Car Registration</h1>
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+    <form action="carRegis.php" method="post">
+        <h3>Car's Details</h3>
+        <label for="car_MakeModel">Make & Model</label><br>
+        <input type="text" name="car_MakeModel" id="car_MakeModel" required><br><br>
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+        <label for="car_Color">Color</label><br>
+        <input type="text" name="car_Color" id="car_Color" required><br><br>
+        
+        <label for="car_Year">Year of Manufacture</label><br>
+        <input type="text" name="car_Year" id="car_Year" required><br><br>
 
-// Step 3: Retrieve the form data using PHP $_POST variable
-if (isset($_POST['regCar'])) {
-    $car_MakeModel = $_POST["car_MakeModel"];
-    $car_Color = $_POST["car_Color"];
-    $car_Year = $_POST["car_Year"];
-    $car_PlateNumber = $_POST["car_PlateNumber"];
-    $car_ChasisNumber = $_POST["car_ChasisNumber"];
-    $owner_ID = $user_ID;
-    $user_Type = $_SESSION['login_Type'];
-    $verificationStat = 'Pending';
+        <label for="car_PlateNumber">Plate Number</label><br>
+        <input type="text" name="car_PlateNumber" id="car_PlateNumber" required><br><br>
 
-    // Step 4: Prepare a SQL statement with parameters
-    $stmt = $conn->prepare("INSERT INTO car (car_MakeModel, car_Color, car_PlateNumber, car_ChasisNumber, car_Year, user_ID, d_ID, verificationStat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        <label for="car_ChasisNumber">Chasis Number</label><br>
+        <input type="text" name="car_ChasisNumber" id="car_ChasisNumber" required><br><br><br>
 
-    if (!$stmt) {
-        die("Error: " . $conn->error);
-    }
-
-    // Step 5: Bind the parameters to the statement
-    $stmt->bind_param("ssssssss", $car_MakeModel, $car_Color, $car_PlateNumber, $car_ChasisNumber, $car_Year, $owner_ID, $d_ID, $verificationStat);
-
-    // Step 6: Execute the statement
-    if ($stmt->execute()) {
-        echo "<script>alert('New record created successfully')</script>";
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-
-    // Step 7: Close the statement
-    $stmt->close();
-
-    // Step 8: Update the user type if it is "Passenger"
-    if ($user_Type == "Passenger") {
-        // Prepare the update query
-        $driver = 'Driver';
-        $update_query = "UPDATE user SET user_Type='$driver' WHERE user_ID=?";
-
-        // Prepare the statement
-        $stmt = $conn->prepare($update_query);
-
-        if (!$stmt) {
-            die("Error: " . $conn->error);
-        }
-
-        // Bind the parameter to the statement
-        $stmt->bind_param("s", $owner_ID);
-
-        // Execute the statement
-        if ($stmt->execute()) {
-            $_SESSION['login_Type'] = $driver;
-            echo "User type updated successfully";
-        } else {
-            echo "Error updating user type: " . $stmt->error;
-        }
-
-        // Close the statement
-        $stmt->close();
-    }
-
-    // Step 9: Close the connection
-    $conn->close();
-
-    header("Location: carList.php"); 
-    exit();
-}
-?>
+        <input type="submit" name="regCar">   
+    </form>
+</body>
+</html>

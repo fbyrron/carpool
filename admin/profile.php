@@ -1,5 +1,7 @@
 <?php
-session_start();
+
+include '../database.php';
+
 $ID = $_SESSION['admin_ID'];
 $email = $_SESSION['admin_Email'];
 $password = $_SESSION['admin_Password'];
@@ -7,8 +9,6 @@ $FirstName = $_SESSION['admin_FN'];
 $LastName = $_SESSION['admin_LN'];
 $Role = $_SESSION['admin_Role'];
 
-$conn = new mysqli("localhost", "root", "", "carpool");
-// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -22,57 +22,71 @@ $result = $conn->query($sql);
 <head>
 	<meta charset="UTF-8">
 	<title>Admin</title>
-  <link rel="stylesheet" href="admin.css">
-
+	<link rel="stylesheet" href="admin.css">
+	<style>
+		.container {
+			display: flex;
+			justify-content: center;
+			max-width: 600px;
+			margin: 0 auto;
+			padding: 20px;
+			background-color: #fff;
+			box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+		}
+		
+		#table {
+			display: flex;
+			justify-content: center;
+			width: 100%;
+			margin: 0 auto;
+			margin-top: 30px;
+		}
+		
+		#table h1 {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+		
+		table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+		
+		table td {
+			padding: 10px;
+			border: 1px solid #ddd;
+		}
+		
+		table tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+		
+		table tr:hover {
+			background-color: #ddd;
+		}
+	</style>
 </head>
 <body>
 	<div class="container">
-		<h1><?php echo $FirstName. " " . $LastName; ?></h1>
 		<div id="table">
-		<table>
-		<tr>
-			<td>Role:</td>
-			<td><?php echo $Role; ?></td>
-		</tr>
-		<tr>
-			<td>Name:</td>
-			<td><?php echo $FirstName. " ". $LastName; ?></td>
-		</tr>
-		<tr>
-			<td>Email:</td>
-			<td><?php echo $email; ?></td>
-		</tr>
-		</table>
+			<h1><?php echo $FirstName . " " . $LastName; ?></h1>
+			<table>
+				<tr>
+					<td>Role:</td>
+					<td><?php echo $Role; ?></td>
+				</tr>
+				<tr>
+					<td>Name:</td>
+					<td><?php echo $FirstName . " " . $LastName; ?></td>
+				</tr>
+				<tr>
+					<td>Email:</td>
+					<td><?php echo $email; ?></td>
+				</tr>
+			</table>
+		</div>
 	</div>
-</div>
-		<div class="side-menu">
-			<span class="close-menu">&times;</span>
-			<ul>
-                <li style="padding-bottom: 40px; padding-top: 40px; font-size: xx-large; text-align: center;">Carpool</li>
-				<a href="profile.php"><li>Profile</li></a>
-				<a href="admincarlist.php"><li>Registered Cars</li></a>
-				<a href="userlist.php"><li>List of User</li></a>
-                <a href="http://localhost/carpool/"><li>Logout</li></a>
-			</ul>
-		<span class="open-menu" >&#9776;</span>
-	</div>
-
-	<script>
-		const openBtn = document.querySelector('.open-menu');
-		const closeBtn = document.querySelector('.close-menu');
-		const sideMenu = document.querySelector('.side-menu');
-
-		openBtn.addEventListener('click', () => {
-			sideMenu.classList.add('open');
-			openBtn.style.display = 'none';
-			closeBtn.style.display = 'block';
-		});
-
-		closeBtn.addEventListener('click', () => {
-			sideMenu.classList.remove('open');
-			closeBtn.style.display = 'none';
-			openBtn.style.display = 'block';
-		});
-	</script>
+	<?php include 'sidemenu.html'; ?>
 </body>
 </html>
+
