@@ -77,7 +77,7 @@ if (isset($_SESSION['cashOutSuccess'])) {
     <p style="text-align: center;"><b>Current Balance:</b> <?php echo $_SESSION['login_Balance'] ?> tickets</p><br>
 
     <label><b>Amount</b></label><br>
-    <input type="number" name="trans_Amount" id="trans_Amount">
+    <input type="number" name="trans_Amount" min="1" id="trans_Amount">
     <br><br>
 
     <label for="trans_GcashAccNo"><b>Gcash Account Number</b> (Receiver)</label>

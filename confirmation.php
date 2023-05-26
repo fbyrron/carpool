@@ -8,6 +8,14 @@ require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
 include 'database.php';
 
+$user_Type = 'Passenger';
+$user_Email = $_POST['user_Email'];
+$user_Password = $_POST['user_Password'];
+$user_FirstName = $_POST['user_FirstName'];
+$user_LastName = $_POST['user_LastName'];
+$user_ContactNumber = $_POST['user_ContactNumber'];
+$user_VerificationStat = 'Pending';
+$freeTix = 10;
 
 if(isset($_POST["send"])){
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -47,7 +55,7 @@ if(isset($_POST["send"])){
         $mail_template ="
     <h2>Carpool App</h2>
     Good day, you only have one step to use the app. Click the link below to finalize the Carpool App Registration.<br>
-    <a href='http://localhost/carpool/register_.php'>Verifying Email Address</a>";
+    <a href='http://localhost/carpool/register_.php?email=$user_Email'>Verifying Email Address</a>";
 
     $mail->Body = $mail_template;
     $mail->send();
@@ -59,25 +67,33 @@ if(isset($_POST["send"])){
         </script>
     ";
     
-    $user_Type = 'Passenger';
-    $user_Email = $_POST['user_Email'];
-    $user_Password = $_POST['user_Password'];
-    $user_FirstName = $_POST['user_FirstName'];
-    $user_LastName = $_POST['user_LastName'];
-    $user_ContactNumber = $_POST['user_ContactNumber'];
     
-    // Store the variables in the session
-    $_SESSION['user_Type'] = $user_Type;
-    $_SESSION['user_Email'] = $user_Email;
-    $_SESSION['user_Password'] = $user_Password;
-    $_SESSION['user_FirstName'] = $user_FirstName;
-    $_SESSION['user_LastName'] = $user_LastName;
-    $_SESSION['user_ContactNumber'] = $user_ContactNumber;
+    if ($conn->connect_error) {
+        die('Connection Failed: ' . $conn->connect_error);
+    } else {
+        // Check if email already exists
+        $stmt = $conn->prepare("SELECT * FROM user WHERE user_Email = ?");
+        $stmt->bind_param("s", $user_Email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            // Email already exists, show error message
+            echo "Email already registered.";
+        } else {
+            // Email does not exist, insert user data
+            $stmt = $conn->prepare("INSERT INTO user(user_Type, user_Email, user_Password, user_FirstName, user_LastName, user_ContactNumber, user_AccBalance, user_VerificationStat) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssds", $user_Type, $user_Email, $user_Password, $user_FirstName, $user_LastName, $user_ContactNumber, $freeTix, $user_VerificationStat);
+            $stmt->execute();
+            $stmt->close();
+            $conn->close();
+            echo "Carpool Registration Successful";
+            }
+    }
     
     // Redirect to the new page
-    header('Location: userReg.php');
+    header('Location: index.php');
     exit();
     
 }
 }
-?>

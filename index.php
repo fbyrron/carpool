@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,6 +8,7 @@
     <title>Carpool</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <h1>Carpool Login</h1>
     <form action="login.php" method="post">
@@ -26,9 +28,12 @@
 
         <input type="submit" value="Login"><br><br><br>
 
-        <div id="dont"><p></p>Don't have an Account?</p><a href="userReg.php">Register Here</a></div>
+        <div id="dont">
+            <p></p>Don't have an Account?</p><a href="userReg.php">Register Here</a>
+        </div>
     </form>
 
     <script src="login.php"></script>
 </body>
+
 </html>

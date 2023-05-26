@@ -31,7 +31,6 @@ if (isset($_POST['regCar'])) {
 
     // Step 6: Execute the statement
     if ($stmt->execute()) {
-        // $_SESSION['login_ID'] = $;
         echo "<script>alert('New record created successfully')</script>";
     } else {
         echo "Error: " . $stmt->error;

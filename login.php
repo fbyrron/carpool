@@ -28,7 +28,7 @@ if (mysqli_num_rows($result) == 1) {
 }
 
 // Verify email and password against database
-$sql = "SELECT * FROM user WHERE user_Email = '$email' AND user_Password = '$password'";
+$sql = "SELECT * FROM user WHERE user_Email = '$email' AND user_Password = '$password' AND user_VerificationStat='Approved'";
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {

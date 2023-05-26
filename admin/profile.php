@@ -10,7 +10,7 @@ $LastName = $_SESSION['admin_LN'];
 $Role = $_SESSION['admin_Role'];
 
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+	die("Connection failed: " . $conn->connect_error);
 }
 
 $sql = "SELECT * FROM admin WHERE admin_ID = '$ID'";
@@ -19,6 +19,7 @@ $result = $conn->query($sql);
 
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta charset="UTF-8">
 	<title>Admin</title>
@@ -33,7 +34,7 @@ $result = $conn->query($sql);
 			background-color: #fff;
 			box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 		}
-		
+
 		#table {
 			display: flex;
 			justify-content: center;
@@ -41,31 +42,32 @@ $result = $conn->query($sql);
 			margin: 0 auto;
 			margin-top: 30px;
 		}
-		
+
 		#table h1 {
 			text-align: center;
 			margin-bottom: 20px;
 		}
-		
+
 		table {
 			border-collapse: collapse;
 			width: 100%;
 		}
-		
+
 		table td {
 			padding: 10px;
 			border: 1px solid #ddd;
 		}
-		
+
 		table tr:nth-child(even) {
 			background-color: #f2f2f2;
 		}
-		
+
 		table tr:hover {
 			background-color: #ddd;
 		}
 	</style>
 </head>
+
 <body>
 	<div class="container">
 		<div id="table">
@@ -88,5 +90,5 @@ $result = $conn->query($sql);
 	</div>
 	<?php include 'sidemenu.html'; ?>
 </body>
-</html>
 
+</html>

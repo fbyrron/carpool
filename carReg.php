@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,6 +8,7 @@
     <title>Car Registration</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <?php
     include 'database.php';
@@ -21,7 +23,7 @@
 
         <label for="car_Color">Color</label><br>
         <input type="text" name="car_Color" id="car_Color" required><br><br>
-        
+
         <label for="car_Year">Year of Manufacture</label><br>
         <input type="text" name="car_Year" id="car_Year" required><br><br>
 
@@ -31,7 +33,8 @@
         <label for="car_ChasisNumber">Chasis Number</label><br>
         <input type="text" name="car_ChasisNumber" id="car_ChasisNumber" required><br><br><br>
 
-        <input type="submit" name="regCar">   
+        <input type="submit" name="regCar">
     </form>
 </body>
+
 </html>

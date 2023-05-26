@@ -13,12 +13,14 @@ $result = $conn->query($sql);
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <link rel="stylesheet" href="../style.css">
     <title>Car Registration List</title>
 </head>
+
 <body>
-<?php include 'sidemenu.html'; ?>
+    <?php include 'sidemenu.html'; ?>
 
     <h1>Carpol User List</h1>
     <table>
@@ -29,17 +31,18 @@ $result = $conn->query($sql);
             <th>Contact Number</th>
             <th>Email Address</th>
         </tr>
-        <?php while($row = $result->fetch_assoc()): ?>
-        <tr>
-            <td><?php echo $row['user_ID']; ?></td>
-            <td><?php echo $row['user_FirstName'] ." ". $row['user_LastName']; ?></td>
-            <td><?php echo $row['user_Type']; ?></td>
-            <td><?php echo $row['user_ContactNumber']; ?></td>
-            <td><?php echo $row['user_Email']; ?></td>
-        </tr>
+        <?php while ($row = $result->fetch_assoc()) : ?>
+            <tr>
+                <td><?php echo $row['user_ID']; ?></td>
+                <td><?php echo $row['user_FirstName'] . " " . $row['user_LastName']; ?></td>
+                <td><?php echo $row['user_Type']; ?></td>
+                <td><?php echo $row['user_ContactNumber']; ?></td>
+                <td><?php echo $row['user_Email']; ?></td>
+            </tr>
         <?php endwhile; ?>
     </table><br><br><br><br>
 </body>
+
 </html>
 
 <?php

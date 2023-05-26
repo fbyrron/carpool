@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include 'database.php';
 
 $ID = $_SESSION['login_ID'];
@@ -13,34 +17,40 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT * FROM car WHERE user_ID = '$ID'";
+$sql = "SELECT * FROM user WHERE user_ID = '$ID'";
 $result = $conn->query($sql);
+while ($row = $result->fetch_assoc()) :
+  if ($row['user_ID'] == $ID) :
+    $user_Type =  $row['user_Type'];
+    $user_Balance = $row['user_AccBalance'];
+  endif;
+endwhile;
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-  
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: sans-serif;
-        background-color: #f2f2f2;
-      }
-      
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 50px 20px;
-        background-color: #fff;
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile: <?php echo $_SESSION['login_FirstName'] ?></title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background-color: #f2f2f2;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 50px 20px;
+      background-color: #fff;
       box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     }
-    
+
     h1 {
       margin: 0;
       font-size: 32px;
@@ -48,7 +58,7 @@ $result = $conn->query($sql);
       text-align: center;
       margin-bottom: 20px;
     }
-    
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -71,7 +81,7 @@ $result = $conn->query($sql);
       font-weight: bold;
       width: 30%;
     }
-    
+
     td:last-child {
       font-weight: 500;
       color: #666;
@@ -96,7 +106,7 @@ $result = $conn->query($sql);
       cursor: pointer;
       font-size: 12px;
     }
-    
+
     input[type="text"],
     input[type="email"],
     input[type="tel"],
@@ -109,45 +119,48 @@ $result = $conn->query($sql);
       font-size: 16px;
       margin-bottom: 20px;
     }
-    .balance-box {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 200px;
-    margin-right: 200px;
-  }
 
-  .balance-text {
-    font-size: 18px;
-    text-align: center;
-  }
-    </style>
+    .balance-box {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      margin-left: 200px;
+      margin-right: 200px;
+    }
+
+    .balance-text {
+      font-size: 18px;
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body>
   <?php include 'navbar.php'; ?>
   <div class="container">
     <?php
-    $user_Type = $_SESSION['login_Type'];
+    // $user_Type = $_SESSION['login_Type'];
     $email = $_SESSION['login_Email'];
     $password = $_SESSION['login_Password'];
     $user_FirstName = $_SESSION['login_FirstName'];
     $user_LastName = $_SESSION['login_LastName'];
     $user_ContactNumber = $_SESSION['login_ContactNumber'];
-    $user_Balance = $_SESSION['login_Balance'];   
+    // $user_Balance = $_SESSION['login_Balance'];
     ?>
 
-<h1><?php echo $user_FirstName . " " . $user_LastName; ?></h1>
-<div class="balance-box">
-  <p class="balance-text"><b>Balance:</b> <?php echo $user_Balance; ?> tickets</p>
-</div>
-<div id="table">
+    <h1><?php echo $user_FirstName . " " . $user_LastName; ?></h1>
+    <div class="balance-box">
+      <p class="balance-text"><b>Balance:</b> <?php echo $user_Balance ?> tickets</p>
+    </div>
+    <div id="table">
       <table>
         <tr>
           <td>Type:</td>
-          <td><?php echo $user_Type; ?></td>
+          <td>
+            <?php echo $user_Type . "<br>"; ?>
+          </td>
         </tr>
         <tr>
           <td>Name:</td>
@@ -164,7 +177,9 @@ $result = $conn->query($sql);
         <tr id="car">
           <td style="vertical-align:top">Approved Car/s:</td>
           <td>
-            <?php while ($row = $result->fetch_assoc()) : ?>
+            <?php
+            $result = $conn->query("SELECT * FROM car WHERE user_ID = '$ID'");
+            while ($row = $result->fetch_assoc()) : ?>
               <?php if ($row['verificationStat'] == 'Approved') : ?>
                 <?php echo $row['car_MakeModel'] . "<br>"; ?>
               <?php endif; ?>
@@ -245,37 +260,36 @@ $result = $conn->query($sql);
 
     <script>
       table = document.getElementById("table");
-editable = document.getElementById("editable");
-password = document.getElementById("password");
-car = document.getElementById("car");
+      editable = document.getElementById("editable");
+      password = document.getElementById("password");
+      car = document.getElementById("car");
 
-editable.style.display = "none";
-password.style.display = "none";
-car.style.display = "none";
+      editable.style.display = "none";
+      password.style.display = "none";
+      car.style.display = "none";
 
-function edit() {
-  table.style.display = "none";
-  editable.style.display = "block";
-  password.style.display = "none";
+      function edit() {
+        table.style.display = "none";
+        editable.style.display = "block";
+        password.style.display = "none";
 
-  document.getElementById('p1').innerHTML = "You may now edit your Profile";
-}
+        document.getElementById('p1').innerHTML = "You may now edit your Profile";
+      }
 
-function editpass() {
-  table.style.display = "none";
-  editable.style.display = "none";
-  password.style.display = "block";
-}
+      function editpass() {
+        table.style.display = "none";
+        editable.style.display = "none";
+        password.style.display = "block";
+      }
 
-<?php 
-$sql = "SELECT * FROM user WHERE user_ID = '$ID'";
-$result = $conn->query($sql);
-while ($row = $result->fetch_assoc()) : ?>
-  if ("<?php echo $row['user_Type']; ?>" == "Driver"){
-    car.style.display = "table-row"; 
-  }
-<?php endwhile; ?>
-
+      <?php
+      $sql = "SELECT * FROM user WHERE user_ID = '$ID'";
+      $result = $conn->query($sql);
+      while ($row = $result->fetch_assoc()) : ?>
+        if ("<?php echo $row['user_Type']; ?>" == "Driver") {
+          car.style.display = "table-row";
+        }
+      <?php endwhile; ?>
     </script>
   </div>
 </body>

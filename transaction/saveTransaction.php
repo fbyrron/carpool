@@ -47,16 +47,10 @@ try {
         // Step 5: Execute the statement
         if ($stmt->execute()) {
             if ($trans_Type == 'Cash-In') {
-                $cashin = ($trans_Amount - $c_InFee);
-                $_SESSION['newBalance'] = ($_SESSION['login_Balance'] + $cashin);
-                $_SESSION['transType'] = 'Cash-In';
                 $_SESSION['cashInSuccess'] = "Your cash-in is now being processed. Please wait for the admin to verify.";
                 header('Location: cash-in.php');
                 exit();
             } else if ($trans_Type == 'Cash-Out') {
-                $cashout = ($trans_Amount + $c_OutFee);
-                $_SESSION['newBalance'] = ($_SESSION['login_Balance'] - $cashout);
-                $_SESSION['transType'] = 'Cash-Out';
                 $_SESSION['cashOutSuccess'] = "Your cash-out is now being processed. Please wait for the admin to verify.";
                 header('Location: cash-out.php');
                 exit();

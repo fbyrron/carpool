@@ -100,14 +100,15 @@ if ($conn->connect_error) {
             margin-top: 2px;
             margin-bottom: 2px;
         }
+
         input[type="number"] {
-    width: 100%;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 16px;
-  }
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
     </style>
 </head>
 
@@ -183,7 +184,7 @@ if ($conn->connect_error) {
                             <td><?php echo $row['c_Amount']; ?></td>
                             <td><?php echo $row['c_OutFee'] ?></td>
                             <form action="approveCico.php?c_ID=<?php echo $row['c_ID']; ?>" method="POST">
-                            <td><input type="number" name="c_GcashRef" id="c_GcashRef"></td>
+                                <td><input type="number" name="c_GcashRef" id="c_GcashRef"></td>
                                 <td style="display: flex; justify-content: space-evenly;">
                                     <button type="submit" name="approve_btn" id="approve_btn" style="background-color: #6fc372;">Approve</button>
                                     <button type="submit" name="deny_btn" id="deny_btn" style="background-color: #dc5543;">Deny</button>

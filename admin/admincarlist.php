@@ -117,7 +117,7 @@ $result = $conn->query($sql);
                             <td><?php echo $row['user_FirstName'] . " " . $row['user_LastName']; ?></td>
                             <td><?php echo $row['user_ContactNumber']; ?></td>
                             <form action="editVerification.php?car_ID=<?php echo $row['car_ID']; ?>" method="POST">
-                            <td style="display: flex; justify-content: space-evenly;">
+                                <td style="display: flex; justify-content: space-evenly;">
                                     <button type="submit" name="approve_btn" id="approve_btn" style="background-color: #6fc372;">Approve</button>
                                     <button type="submit" name="deny_btn" id="deny_btn" style="background-color: #dc5543;">Deny</button>
                                 </td>

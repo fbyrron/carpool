@@ -38,13 +38,24 @@
     }
 </style>
 
+<?php
+$ID = $_SESSION['login_ID'];
+$sql = "SELECT * FROM user WHERE user_ID = '$ID'";
+$result = $conn->query($sql);
+while ($row = $result->fetch_assoc()) :
+    if ($row['user_ID'] == $ID) :
+        $user_Type =  $row['user_Type'];
+        $user_Balance = $row['user_AccBalance'];
+    endif;
+endwhile;
+?> 
 <div class="navbar" style="margin-bottom: 50px;">
     <ul>
         <li id="route">
             <?php
-            if ($_SESSION['login_Type'] == "Driver") {
+            if ($user_Type == "Driver") {
                 $link = 'http://localhost/carpool/transaction/transaction.php';
-            } elseif ($_SESSION['login_Type'] == "Passenger") {
+            } elseif ($user_Type == "Passenger") {
                 $link = 'http://localhost/carpool/transaction/cash-in.php';
             }
             ?>
@@ -52,12 +63,24 @@
                 E-wallet
             </a>
         </li>
+        <li id="">
+            <?php
+            if ($user_Type == "Driver") {
+                $link = 'http://localhost/carpool/route/route.php';
+            } elseif ($user_Type == "Passenger") {
+                $link = 'http://localhost/carpool/route/viewRoute.php';
+            }
+            ?>
+            <a href="<?php echo $link ?>">
+                Routes
+            </a>
+        </li>
         <li>
             <a href="http://localhost/carpool/carReg.php">
                 Register a Car
             </a>
         </li>
-        <?php if ($_SESSION['login_Type'] == "Driver") : ?>
+        <?php if ($user_Type == "Driver") : ?>
             <li>
                 <a href="http://localhost/carpool/carList.php">
                     List of Registered Cars
@@ -71,4 +94,3 @@
         </li>
     </ul>
 </div>
-
