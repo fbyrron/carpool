@@ -120,6 +120,10 @@ if (isset($_SESSION['cashInSuccess'])) {
         <div id="errorContainer"></div>
         <br>
 
+        <?php
+        $sql = "SELECT * FROM user WHERE user_ID = $userID";
+        $result = $conn->query($sql); ?>
+
         <input type="submit" value="Submit" name="submit">
     </form>
 
