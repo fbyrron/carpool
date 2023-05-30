@@ -1,5 +1,4 @@
 <style>
-    /* CSS for the navigation bar */
     .navbar {
         background-color: #4CAF50;
         overflow: hidden;

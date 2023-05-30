@@ -25,7 +25,7 @@ if (isset($_SESSION['cashInSuccess'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cash-In</title>
+    <title>Create Route</title>
     <link rel="stylesheet" href="../style.css">
     <style>
         input[type="radio"] {
@@ -99,6 +99,24 @@ if (isset($_SESSION['cashInSuccess'])) {
 
         <label for="route_MidSeat"><b>Middle Window Seat Fare</b></label>
         <input type="number" name="route_MidSeat" id="route_MidSeat"><br><br>
+        <br>
+
+        <label for="route_CarID"><b>Car Details</b></label>
+        <select name="route_CarID" id="route_CarID">
+            <?php
+            $sql = "SELECT * FROM car WHERE user_ID = $userID";
+            $result = $conn->query($sql);
+            while ($row = $result->fetch_assoc()) :
+                if ($row['verificationStat'] == "Approved") :
+                    $ID = $row['car_ID'] ?>
+                    <option value="" selected disabled hidden>Choose One</option>
+                    <option value="<?php echo $ID ?>">
+                        <?php echo $row['car_MakeModel'] . " (" . $row['car_Color'] . ")" ?>
+                    </option>
+            <?php endif;
+            endwhile; ?>
+        </select>
+
         <div id="errorContainer"></div>
         <br>
 
@@ -124,14 +142,14 @@ if (isset($_SESSION['cashInSuccess'])) {
             }
 
             var errorContainer = document.getElementById("errorContainer");
-            errorContainer.innerHTML = ""; 
+            errorContainer.innerHTML = "";
 
             if (errorMessages.length > 0) {
                 var errorText = document.createElement("p");
                 errorText.className = "error";
                 errorText.textContent = errorMessages[0];
                 errorContainer.appendChild(errorText);
-                return false; 
+                return false;
             }
 
             return true;

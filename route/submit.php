@@ -10,11 +10,12 @@ try {
     }
 
     // Step 2: Set up prepared statement
-    $stmt = $conn->prepare("INSERT INTO route (user_ID, route_Start, route_End, route_Date, route_Depart, route_Arrival, route_FrontSeat, route_SideSeat, route_MidSeat, route_Status, route_VerificationStat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO route (user_ID, route_CarID, route_Start, route_End, route_Date, route_Depart, route_Arrival, route_FrontSeat, route_SideSeat, route_MidSeat, route_Status, route_VerificationStat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
     // Step 3: Retrieve the form data using PHP $_POST variable
     if (isset($_POST['submit'])) {
         $user_ID = $_SESSION['login_ID'];
+        $carID = $_POST['route_CarID'];
         $route_Start = $_POST['route_Start'];
         $route_End = $_POST['route_End'];
         $route_Date = $_POST['route_Date'];
@@ -29,11 +30,11 @@ try {
         
 
         // Step 4: Bind the parameters to the statement
-        $stmt->bind_param("dsssssdddss", $user_ID, $route_Start, $route_End, $route_Date, $route_Depart, $route_Arrival, $route_FrontSeat, $route_SideSeat, $route_MidSeat, $route_Status, $route_VerIficationStat);
+        $stmt->bind_param("ddsssssdddss", $user_ID, $carID, $route_Start, $route_End, $route_Date, $route_Depart, $route_Arrival, $route_FrontSeat, $route_SideSeat, $route_MidSeat, $route_Status, $route_VerIficationStat);
 
         // Step 5: Execute the statement
         if ($stmt->execute()) {
-                $_SESSION['cashInSuccess'] = "Your route registration is now being processed. Please wait for the admin to verify.";
+                $_SESSION['cashInSuccess'] = "Your route has been successfully registered and posted on the <i>View Route</i> chuchu.";
                 header('Location: createRoute.php');
                 exit();
         } else {
