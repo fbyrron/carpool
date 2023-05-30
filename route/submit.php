@@ -10,7 +10,7 @@ try {
     }
 
     // Step 2: Set up prepared statement
-    $stmt = $conn->prepare("INSERT INTO route (user_ID, route_CarID, route_Start, route_End, route_Date, route_Depart, route_Arrival, route_FrontSeat, route_SideSeat, route_MidSeat, route_Status, route_VerificationStat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO route (user_ID, route_CarID, route_Start, route_End, route_Date, route_Depart, route_Arrival, route_FrontSeat, route_SideSeat, route_MidSeat, route_Status, route_VerificationStat, user_AccBalance) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
     // Step 3: Retrieve the form data using PHP $_POST variable
     if (isset($_POST['submit'])) {
@@ -26,11 +26,12 @@ try {
         $route_MidSeat = $_POST['route_MidSeat'];
         $route_Status = 'Scheduled';
         $route_VerIficationStat = 'Pending';
+        // $user_AccBalance = ;
         
         
 
         // Step 4: Bind the parameters to the statement
-        $stmt->bind_param("ddsssssdddss", $user_ID, $carID, $route_Start, $route_End, $route_Date, $route_Depart, $route_Arrival, $route_FrontSeat, $route_SideSeat, $route_MidSeat, $route_Status, $route_VerIficationStat);
+        $stmt->bind_param("ddsssssdddssd", $user_ID, $carID, $route_Start, $route_End, $route_Date, $route_Depart, $route_Arrival, $route_FrontSeat, $route_SideSeat, $route_MidSeat, $route_Status, $route_VerIficationStat, $user_AccBalance);
 
         // Step 5: Execute the statement
         if ($stmt->execute()) {
