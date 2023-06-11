@@ -63,6 +63,11 @@ endwhile;
             </a>
         </li>
         <li id="">
+            <a href="http://localhost/carpool/booking/booking.php">
+                Bookings
+            </a>
+        </li>
+        <li id="">
             <?php
             if ($user_Type == "Driver") {
                 $link = 'http://localhost/carpool/route/route.php';

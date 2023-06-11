@@ -69,47 +69,47 @@ if (isset($_SESSION['cashInSuccess'])) {
     <?php if ($successMessage !== "") : ?>
         <p class="success"><?php echo $successMessage; ?></p>
     <?php endif; ?>
-    <form action="submit.php" method="POST" class="form-container" name="route" onsubmit="return validateForm()">
+    <form action="submit.php" method="POST" class="form-container" name="route" onsubmit="return checkBalance()">
 
         <h3 style="text-align: center;">Location</h3>
         <label for="route_Start"><b>Starting Point</b></label>
-        <input type="text" name="route_Start" id="route_Start"><br>
+        <input type="text" name="route_Start" id="route_Start" required><br>
 
         <label for="route_End"><b>End Point</b></label>
-        <input type="text" name="route_End" id="route_End"><br><br><br>
+        <input type="text" name="route_End" id="route_End" required><br><br><br>
 
         <h3 style="text-align: center;">Schedule</h3>
 
         <label for="route_Date"><b>Date</b></label>
-        <input type="date" name="route_Date" id="route_Date"><br>
+        <input type="date" name="route_Date" id="route_Date" required><br>
 
         <label for="route_Depart"><b>Time of Departure</b></label>
-        <input type="time" name="route_Depart" id="route_Depart">
+        <input type="time" name="route_Depart" id="route_Depart" required>
 
         <label for="route_Arrival"><b>Estimated Time of Arrival</b></label><br>
-        <input type="time" name="route_Arrival" id="route_Arrival"><br><br><br>
+        <input type="time" name="route_Arrival" id="route_Arrival" required><br><br><br>
 
         <h3 style="text-align: center;">Fare Rate</h3>
 
         <label for="route_FrontSeat"><b>Front Seat Fare</b></label>
-        <input type="number" name="route_FrontSeat" id="route_FrontSeat"><br>
+        <input type="number" name="route_FrontSeat" id="route_FrontSeat" required><br>
 
         <label for="route_SideSeat"><b>Left & Right Window Seat Fare</b></label>
-        <input type="number" name="route_SideSeat" id="route_SideSeat"><br>
+        <input type="number" name="route_SideSeat" id="route_SideSeat" required><br>
 
         <label for="route_MidSeat"><b>Middle Window Seat Fare</b></label>
-        <input type="number" name="route_MidSeat" id="route_MidSeat"><br><br>
+        <input type="number" name="route_MidSeat" id="route_MidSeat" required><br><br>
         <br>
 
         <label for="route_CarID"><b>Car Details</b></label>
-        <select name="route_CarID" id="route_CarID">
+        <select name="route_CarID" id="route_CarID" required>
+            <option value="" selected disabled hidden>Choose One</option>
             <?php
             $sql = "SELECT * FROM car WHERE user_ID = $userID";
             $result = $conn->query($sql);
             while ($row = $result->fetch_assoc()) :
                 if ($row['verificationStat'] == "Approved") :
                     $ID = $row['car_ID'] ?>
-                    <option value="" selected disabled hidden>Choose One</option>
                     <option value="<?php echo $ID ?>">
                         <?php echo $row['car_MakeModel'] . " (" . $row['car_Color'] . ")" ?>
                     </option>
@@ -119,46 +119,28 @@ if (isset($_SESSION['cashInSuccess'])) {
 
         <div id="errorContainer"></div>
         <br>
-
-        <?php
-        $sql = "SELECT * FROM user WHERE user_ID = $userID";
-        $result = $conn->query($sql); ?>
-
+        
         <input type="submit" value="Submit" name="submit">
+        <div id="errorContainerBal"></div>
     </form>
-
-
+    <?php
+    $user_ID = $_SESSION['login_ID'];
+    $user = "SELECT * FROM user WHERE user_ID = '$user_ID'";
+    $accBal = $conn->query($user);
+    while ($rowBalance = $accBal->fetch_assoc()) :
+        $balance = $rowBalance['user_AccBalance'];
+    endwhile;
+    ?>
     <script>
-        function validateForm() {
-            var route_Start = document.forms["route"]["route_Start"].value;
-            var route_End = document.forms["route"]["route_End"].value;
-            var route_Date = document.forms["route"]["route_Date"].value;
-            var route_Depart = document.forms["route"]["route_Depart"].value;
-            var route_Arrival = document.forms["route"]["route_Arrival"].value;
-            var route_FrontSeat = document.forms["route"]["route_FrontSeat"].value;
-            var route_SideSeat = document.forms["route"]["route_SideSeat"].value;
-            var route_MidSeat = document.forms["route"]["route_MidSeat"].value;
-
-            var errorMessages = [];
-
-            if (route_Start === "" || route_End === "" || route_Date === "" || route_Depart === "" || route_Arrival === "" || route_FrontSeat === "" || route_SideSeat === "" || route_MidSeat === "") {
-                errorMessages.push("Please fill in all fields");
-            }
-
-            var errorContainer = document.getElementById("errorContainer");
-            errorContainer.innerHTML = "";
-
-            if (errorMessages.length > 0) {
-                var errorText = document.createElement("p");
-                errorText.className = "error";
-                errorText.textContent = errorMessages[0];
-                errorContainer.appendChild(errorText);
+        function checkBalance() {
+            balance = parseInt(<?php echo $balance; ?>);
+            if (balance < 10) {
+                document.getElementById('errorContainerBal').innerHTML = "<br><span style='color: red;'>You have Insufficient Balance to create a Route. You need at least 10 tickets to proceed. </span><br><br>";
                 return false;
             }
-
-            return true;
         }
     </script>
+
 
 </body>
 

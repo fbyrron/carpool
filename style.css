@@ -41,7 +41,7 @@
     margin-bottom: 20px;
   }
 
-  input[type="submit"] {
+  input[type="submit"]{
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
@@ -132,3 +132,4 @@
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
+ 

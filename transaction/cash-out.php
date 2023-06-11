@@ -9,10 +9,6 @@ if ($conn->connect_error) {
 
 $userID = $_SESSION['login_ID'];
 
-$sql = "SELECT * FROM user WHERE user_ID = $userID";
-$result = $conn->query($sql);
-
-
 $successMessage = "";
 if (isset($_SESSION['cashOutSuccess'])) {
   $successMessage = $_SESSION['cashOutSuccess'];
@@ -63,6 +59,13 @@ if (isset($_SESSION['cashOutSuccess'])) {
   </style>
 </head>
 
+  <?php
+  $sql = "SELECT * FROM user WHERE user_ID = $userID";
+  $result = $conn->query($sql);
+  while ($row = $result->fetch_assoc()) :
+    $user_Balance = $row['user_AccBalance'];
+  endwhile;
+  ?>
 <body>
   <?php include '../navbar.php' ?>
 
@@ -74,7 +77,7 @@ if (isset($_SESSION['cashOutSuccess'])) {
 
     <input type="hidden" name="trans_Type" value="Cash-Out">
 
-    <p style="text-align: center;"><b>Current Balance:</b> <?php echo $_SESSION['login_Balance'] ?> tickets</p><br>
+    <p style="text-align: center;"><b>Current Balance:</b> <?php echo $user_Balance ?> tickets</p><br>
 
     <label><b>Amount</b></label><br>
     <input type="number" name="trans_Amount" min="1" id="trans_Amount">
@@ -101,7 +104,6 @@ if (isset($_SESSION['cashOutSuccess'])) {
     <input type="submit" value="Submit" name="submit">
   </form>
 
-  
 
   <script>
     function validateForm() {
@@ -110,7 +112,7 @@ if (isset($_SESSION['cashOutSuccess'])) {
       var gcashAccNo = document.forms["cashOutForm"]["trans_GcashAccNo"].value;
       var gcashAccName = document.forms["cashOutForm"]["trans_GcashAccName"].value;
       var trans_Amount = document.forms["cashOutForm"]["trans_Amount"].value;
-      var fee = Math.ceil(trans_Amount / 1000) * 20; 
+      var fee = Math.ceil(trans_Amount / 1000) * 20;
 
       var errorMessages = [];
 
@@ -118,23 +120,23 @@ if (isset($_SESSION['cashOutSuccess'])) {
         errorMessages.push("Please fill in all fields");
       } else if (enteredPass !== "<?php echo $_SESSION['login_Password'] ?>") {
         errorMessages.push("Incorrect password");
-      } else if (parseInt("<?php echo $_SESSION['login_Balance'] ?>") < (parseInt(amount) + parseInt(fee))) {
-      errorMessages.push("You don't have enough tickets to continue");
+      } else if (parseInt("<?php echo $user_Balance ?>") < (parseInt(amount) + parseInt(fee))) {
+        errorMessages.push("You don't have enough tickets to continue");
       }
 
 
       var errorContainer = document.getElementById("errorContainer");
-      errorContainer.innerHTML = ""; // Clear previous error messages
+      errorContainer.innerHTML = "";
 
       if (errorMessages.length > 0) {
         var errorText = document.createElement("p");
         errorText.className = "error";
         errorText.textContent = errorMessages.join(" <br> ");
         errorContainer.appendChild(errorText);
-        return false; // Prevent form submission
+        return false; 
       }
 
-      return true; // Allow form submission
+      return true; 
     }
   </script>
 

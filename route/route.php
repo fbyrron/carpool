@@ -10,24 +10,27 @@
 </head>
 
 <body>
-<?php 
-include '../database.php'; 
-include '../navbar.php' ;
-?>
+    <?php
+    include '../database.php';
+    include '../navbar.php';
+    ?>
     <div class="row">
         <div class="col">
             <div>
                 <h3>View Route</h3>
-            </div>
-            <br>
+            </div> <br>
             <div><a href="viewRoute.php"><button>Here</button></a></div>
         </div>
         <div class="col">
             <h3>Create Route</h3> <br>
             <div><a href="createRoute.php"><button>Here</button></a></div>
         </div>
+        <div class="col">
+            <h3>My Routes</h3> <br>
+            <div><a href="myRoutes.php"><button>Here</button></a></div>
+        </div>
     </div>
-    <?php 
+    <?php
     $type = $_SESSION['login_Type'] ?>
     <script>
         let route = document.getElementById('route');

@@ -1,8 +1,9 @@
 <?php
 include '../database.php';
-$route_ID = $_SESSION['pRouteID'];
-$route_CarID = $_SESSION['pRouteCarID'];
+$route_ID = $_SESSION['bRouteID'];
+$route_CarID = $_SESSION['bRouteCarID'];
 $user_ID = $_SESSION['login_ID'];
+$bookingID = $_SESSION['bBookingID'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,7 +115,7 @@ $user_ID = $_SESSION['login_ID'];
 
         }
 
-        #confirmation {
+        .confirmation {
             position: fixed;
             display: none;
             align-items: center;
@@ -133,8 +134,6 @@ $user_ID = $_SESSION['login_ID'];
                 0 4px 8px rgba(0, 0, 0, .2),
                 0 2px 4px rgba(0, 0, 0, .2);
         }
-
-        
     </style>
 </head>
 
@@ -153,8 +152,9 @@ $user_ID = $_SESSION['login_ID'];
             $arrive = date("h:i A", strtotime($arriveValue));
             $_SESSION['routeDriver'] = $row['user_ID'];
             $driver =  $row['user_ID'];
+            $_SESSION['routeStatus'] = $row['route_Status'];
         ?>
-            
+
             <h2>Route Details</h2>
             <table>
                 <tr>
@@ -206,7 +206,7 @@ $user_ID = $_SESSION['login_ID'];
                         <b>Front Seat Rate: </b>
                     </td>
                     <td>
-                        <?php echo $row['route_FrontSeat']." tickets" ?>
+                        <?php echo $row['route_FrontSeat'] . " tickets" ?>
                     </td>
                 </tr>
                 <tr>
@@ -214,7 +214,7 @@ $user_ID = $_SESSION['login_ID'];
                         <b>Window Seat Rate: </b>
                     </td>
                     <td>
-                        <?php echo $row['route_SideSeat'] ." tickets"?>
+                        <?php echo $row['route_SideSeat'] . " tickets" ?>
                     </td>
                 </tr>
                 <tr>
@@ -222,7 +222,7 @@ $user_ID = $_SESSION['login_ID'];
                         <b>Middle Seat Rate: </b>
                     </td>
                     <td>
-                        <?php echo $row['route_MidSeat']." tickets" ?>
+                        <?php echo $row['route_MidSeat'] . " tickets" ?>
                     </td>
                 </tr>
             </table>
@@ -289,8 +289,23 @@ $user_ID = $_SESSION['login_ID'];
                 </td>
             </tr>
         </table>
-        <br><br><br><br>
-
+        <br><br>
+        <?php
+        $sqlBook = "SELECT * FROM booking WHERE booking_ID = '$bookingID'";
+        $resultBook = $conn->query($sqlBook);
+        $bookRow = $resultBook->fetch_assoc()
+        ?>
+        <h1 style="color: green;"><?php echo $bookRow['booking_SeatPosition'] ?></h1>
+        
+        <?php
+        $bookings = "SELECT * FROM booking WHERE booking_ID = $bookingID";
+        $booking = $conn->query($bookings);
+        $rowBooking = $booking->fetch_assoc();
+        $stat = $rowBooking['booking_Status'];
+        if ($stat == 'Arrived') {
+                echo '<b style="text-align:center">You have arrived at your destination.</b>';
+            }
+            ?>
         <div style="display: flex; justify-content: space-evenly;">
             <?php
             $ID = $_SESSION['login_ID'];
@@ -312,151 +327,187 @@ $user_ID = $_SESSION['login_ID'];
             $MSeat = false;
             $cancellable = true;
 
-            $bookings = "SELECT * FROM booking WHERE route_ID = '$route_ID'";
+            $bookings = "SELECT * FROM booking WHERE booking_ID = $bookingID";
             $booking = $conn->query($bookings);
-            while ($rowBooking = $booking->fetch_assoc()) :
-                if (($rowBooking['booking_SeatPosition'] == 'Front Seat')) {
-                    $FSeat = true;
-                } elseif (($rowBooking['booking_SeatPosition'] == 'Left Window Seat')) {
-                    $LSeat = true;
-                } elseif ($rowBooking['booking_SeatPosition'] == 'Right Window Seat') {
-                    $RSeat = true;
-                } elseif ($rowBooking['booking_SeatPosition'] == 'Middle Seat') {
-                    $MSeat = true;
-                }
-                if ($FSeat == true || $LSeat == true || $RSeat == true || $MSeat == true) {
-                    $cancellable = false;
-                    break;
-                }
-            endwhile;
-            if ($ID == $routeDriver && $cancellable == true) {
-                echo '<input id="cancel" onclick="confirm()" type="button" value="Cancel Schedule">';
-            } elseif ($ID != $routeDriver) {
-                echo '<input id="choose" onclick="on()" type="button" value="Choose Seat">';
+            $rowBooking = $booking->fetch_assoc();
+            // if($rowBooking['booking_Status']){
+            $stat = $rowBooking['booking_Status'];
+            // }
+            $statRS = $rowBooking['booking_Status'];
+            $statLS = $rowBooking['booking_Status'];
+            $statMS = $rowBooking['booking_Status'];
+            if (($rowBooking['booking_SeatPosition'] == 'Front Seat')) {
+                $FSeat = true;
+            } elseif (($rowBooking['booking_SeatPosition'] == 'Left Window Seat')) {
+                $LSeat = true;
+            } elseif ($rowBooking['booking_SeatPosition'] == 'Right Window Seat') {
+                $RSeat = true;
+            } elseif ($rowBooking['booking_SeatPosition'] == 'Middle Seat') {
+                $MSeat = true;
             }
-            ?>
-            <?php
-            $sqlRoute = "SELECT * FROM route WHERE route_ID = '$route_ID'";
-            $resultRoute = $conn->query($sqlRoute);
-            while ($rowRoute = $resultRoute->fetch_assoc()) :
-                $FSRate = $rowRoute['route_FrontSeat'];
-                $SSRate = $rowRoute['route_SideSeat'];
-                $MSRate = $rowRoute['route_MidSeat'];
-            endwhile;
+            if ($FSeat == true || $LSeat == true || $RSeat == true || $MSeat == true) {
+                $cancellable = false;
+            }
 
-            $sql = "SELECT * FROM booking WHERE route_ID = '$route_ID'";
-            $result = $conn->query($sql);
-            $FS = '';
-            $RS = '';
-            $LS = '';
-            $MS = '';
 
-            while ($row = $result->fetch_assoc()) :
-                if (($row['booking_SeatPosition'] == 'Front Seat')) {
-                    $FS = 'Front Seat';
-                } elseif (($row['booking_SeatPosition'] == 'Left Window Seat')) {
-                    $LS = 'Left Window Seat';
-                } elseif ($row['booking_SeatPosition'] == 'Right Window Seat') {
-                    $RS = 'Right Window Seat';
-                } elseif ($row['booking_SeatPosition'] == 'Middle Seat') {
-                    $MS = 'Middle Seat';
+            $status = $_SESSION['routeStatus'];
+            unset($_SESSION['routeStatus']);
+            if ($status == 'Waiting') {
+                if ($stat == 'Scheduled') {
+                    echo '<input onclick="onCar()" type="button" value="In Car">';
+                } elseif ($stat == 'Inside') {
+                    echo '<b style="text-align:center">The trip will start in a few minutes. Please wait for the driver to depart.</b>';
                 }
-            endwhile;
-
-            $user = "SELECT * FROM user WHERE user_ID = '$user_ID'";
-            $accBal = $conn->query($user);
-            while ($rowBalance = $accBal->fetch_assoc()) :
-                $balance = $rowBalance['user_AccBalance'];
-            endwhile;
+            } elseif ($stat == 'Traveling') {
+                echo '<input onclick="arrived()" type="button" value="Arrived">';
+            } 
+            if ($stat == 'Missed') {
+                echo '<b style="text-align:center">You have missed the trip.</b>';
+            }
+            // else {
+            //     echo '<input id="start" onclick="confirm()" type="button" value="Start the Session">';
+            // }
             ?>
-            <div id="overlay">
-                <button id="closeButton" type="button" onclick="off()">&times;</button>
-                <h2 style="padding-bottom: 10px;">Reserve Now!</h2>
-                <div class="container">
-                    <div class="item <?php echo $FS == 'Front Seat' ? 'reserved' : ''; ?>">
-                        <b>Front Seat</b>
-                        <div>
-                            <?php echo "₱" . $FSRate ?>
-                            <?php if ($FS == "Front Seat") : ?>
-                                <span class="reserved-text" style="margin-left: 30px; margin-right: 20px;"><i>Reserved</i></span>
-                            <?php else : ?>
-                                <input type="hidden" name="front" value="<?php echo $FSRate ?>">
-                                <input name="ReserveFS" type="submit" value="Reserve" style="margin-left: 20px" onclick="return checkBalance(<?php echo $FSRate; ?>, 'ReserveFS')">
-                            <?php endif; ?>
-                        </div>
+        </div>
+        <br><br>
+
+        <?php
+        $sqlRoute = "SELECT * FROM route WHERE route_ID = '$route_ID'";
+        $resultRoute = $conn->query($sqlRoute);
+        while ($rowRoute = $resultRoute->fetch_assoc()) :
+            $FSRate = $rowRoute['route_FrontSeat'];
+            $SSRate = $rowRoute['route_SideSeat'];
+            $MSRate = $rowRoute['route_MidSeat'];
+        endwhile;
+
+        $sql = "SELECT * FROM booking WHERE route_ID = '$route_ID'";
+        $result = $conn->query($sql);
+        $FS = '';
+        $RS = '';
+        $LS = '';
+        $MS = '';
+
+        while ($row = $result->fetch_assoc()) :
+            if (($row['booking_SeatPosition'] == 'Front Seat')) {
+                $FS = 'Front Seat';
+            } elseif (($row['booking_SeatPosition'] == 'Left Window Seat')) {
+                $LS = 'Left Window Seat';
+            } elseif ($row['booking_SeatPosition'] == 'Right Window Seat') {
+                $RS = 'Right Window Seat';
+            } elseif ($row['booking_SeatPosition'] == 'Middle Seat') {
+                $MS = 'Middle Seat';
+            }
+        endwhile;
+
+        $user = "SELECT * FROM user WHERE user_ID = '$user_ID'";
+        $accBal = $conn->query($user);
+        while ($rowBalance = $accBal->fetch_assoc()) :
+            $balance = $rowBalance['user_AccBalance'];
+        endwhile;
+        ?>
+        <div id="overlay">
+            <button id="closeButton" type="button" onclick="off()">&times;</button>
+            <h2 style="padding-bottom: 10px;">Reserve Now!</h2>
+            <div class="container">
+                <div class="item <?php echo $FS == 'Front Seat' ? 'reserved' : ''; ?>">
+                    <b>Front Seat</b>
+                    <div>
+                        <?php echo "₱" . $FSRate ?>
+                        <?php if ($FS == "Front Seat") : ?>
+                            <span class="reserved-text" style="margin-left: 30px; margin-right: 20px;"><i>Reserved</i></span>
+                        <?php else : ?>
+                            <input type="hidden" name="front" value="<?php echo $FSRate ?>">
+                            <input name="ReserveFS" type="submit" value="Reserve" style="margin-left: 20px" onclick="return checkBalance(<?php echo $FSRate; ?>, 'ReserveFS')">
+                        <?php endif; ?>
                     </div>
                 </div>
-                <div id="errorContainerFS" style="text-align: center;"></div>
-
-                <div class="container">
-                    <div class="item <?php echo $RS == 'Right Window Seat' ? 'reserved' : ''; ?>">
-                        <b>Right Window Seat</b>
-                        <div>
-                            <?php echo "₱" . $SSRate ?>
-                            <?php if ($RS == "Right Window Seat") : ?>
-                                <span class="reserved-text" style="margin-left: 30px; margin-right: 20px;"><i>Reserved</i></span>
-                            <?php else : ?>
-                                <input type="hidden" name="right" value="<?php echo $SSRate ?>">
-                                <input name="ReserveRS" type="submit" value="Reserve" style="margin-left: 20px" onclick="return checkBalance(<?php echo $SSRate; ?>, 'ReserveRS')">
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                <div id="errorContainerRS" style="text-align: center;"></div>
-
-                <div class="container">
-                    <div class="item <?php echo $LS == 'Left Window Seat' ? 'reserved' : ''; ?>">
-                        <b>Left Window Seat</b>
-                        <div>
-                            <?php echo "₱" . $SSRate ?>
-                            <?php if ($LS == "Left Window Seat") : ?>
-                                <span class="reserved-text" style="margin-left: 30px; margin-right: 20px;"><i>Reserved</i></span>
-                            <?php else : ?>
-                                <input type="hidden" name="left" value="<?php echo $SSRate ?>">
-                                <input name="ReserveLS" type="submit" value="Reserve" style="margin-left: 20px" onclick="return checkBalance(<?php echo $SSRate; ?>, 'ReserveLS')">
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                <div id="errorContainerLS" style="text-align: center;"></div>
-
-                <div class="container">
-                    <div class="item <?php echo $MS == 'Middle Seat' ? 'reserved' : ''; ?>">
-                        <b>Middle Seat</b>
-                        <div>
-                            <?php echo "₱" . $MSRate ?>
-                            <?php if ($MS == "Middle Seat") : ?>
-                                <span class="reserved-text" style="margin-left: 30px; margin-right: 20px;"><i>Reserved</i></span>
-                            <?php else : ?>
-                                <input type="hidden" name="middle" value="<?php echo $MSRate ?>">
-                                <input name="ReserveMS" type="submit" value="Reserve" style="margin-left: 20px" onclick="return checkBalance(<?php echo $MSRate; ?>, 'ReserveMS')">
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                <div id="errorContainerMS" style="text-align: center;"></div>
-
             </div>
+            <div id="errorContainerFS" style="text-align: center;"></div>
+
+            <div class="container">
+                <div class="item <?php echo $RS == 'Right Window Seat' ? 'reserved' : ''; ?>">
+                    <b>Right Window Seat</b>
+                    <div>
+                        <?php echo "₱" . $SSRate ?>
+                        <?php if ($RS == "Right Window Seat") : ?>
+                            <span class="reserved-text" style="margin-left: 30px; margin-right: 20px;"><i>Reserved</i></span>
+                        <?php else : ?>
+                            <input type="hidden" name="right" value="<?php echo $SSRate ?>">
+                            <input name="ReserveRS" type="submit" value="Reserve" style="margin-left: 20px" onclick="return checkBalance(<?php echo $SSRate; ?>, 'ReserveRS')">
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <div id="errorContainerRS" style="text-align: center;"></div>
+
+            <div class="container">
+                <div class="item <?php echo $LS == 'Left Window Seat' ? 'reserved' : ''; ?>">
+                    <b>Left Window Seat</b>
+                    <div>
+                        <?php echo "₱" . $SSRate ?>
+                        <?php if ($LS == "Left Window Seat") : ?>
+                            <span class="reserved-text" style="margin-left: 30px; margin-right: 20px;"><i>Reserved</i></span>
+                        <?php else : ?>
+                            <input type="hidden" name="left" value="<?php echo $SSRate ?>">
+                            <input name="ReserveLS" type="submit" value="Reserve" style="margin-left: 20px" onclick="return checkBalance(<?php echo $SSRate; ?>, 'ReserveLS')">
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <div id="errorContainerLS" style="text-align: center;"></div>
+
+            <div class="container">
+                <div class="item <?php echo $MS == 'Middle Seat' ? 'reserved' : ''; ?>">
+                    <b>Middle Seat</b>
+                    <div>
+                        <?php echo "₱" . $MSRate ?>
+                        <?php if ($MS == "Middle Seat") : ?>
+                            <span class="reserved-text" style="margin-left: 30px; margin-right: 20px;"><i>Reserved</i></span>
+                        <?php else : ?>
+                            <input type="hidden" name="middle" value="<?php echo $MSRate ?>">
+                            <input name="ReserveMS" type="submit" value="Reserve" style="margin-left: 20px" onclick="return checkBalance(<?php echo $MSRate; ?>, 'ReserveMS')">
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <div id="errorContainerMS" style="text-align: center;"></div>
 
         </div>
-        <div id="confirmation">
-            <h4>Are you sure you want to cancel this Sheduled Route?</h4>
+
+        <div class="confirmation" id="onCar">
+            <h4>Are you are already in the car?</h4>
 
             <div style="display: flex; justify-content: space-evenly;">
-                <input id="yes" name="yes" type="submit" value="Yes" style="background-color: #a5a5a5;">
-                <input id="no" onclick="closeDialog()" type="button" value="Cancel">
+                <input name="yes" type="submit" value="Yes" style="background-color: #a5a5a5;">
+                <input type="hidden" name="bookingID" value="<?php echo $bookingID ?>">
+                <input onclick="closeDialog()" type="button" value="Cancel">
+            </div>
+        </div>
+        <div class="confirmation" id="arrivedButton">
+            <h4>Did you arrived at your destination?</h4>
+
+            <div style="display: flex; justify-content: space-evenly;">
+                <input name="arrivedButton" type="submit" value="Yes" style="background-color: #a5a5a5;">
+                <input type="hidden" name="bookingID" value="<?php echo $bookingID ?>">
+                <input type="hidden" name="routeID" value="<?php echo $route_ID ?>">
+                <input onclick="closeDialog()" type="button" value="Cancel">
             </div>
         </div>
     </form>
     <script>
-        
+        function arrived() {
+            document.getElementById("arrivedButton").style.display = "block";
+        }
 
-        function confirm() {
-            document.getElementById("confirmation").style.display = "block";
+        function onCar() {
+            document.getElementById("onCar").style.display = "block";
         }
 
         function closeDialog() {
-            document.getElementById("confirmation").style.display = "none";
+            document.getElementById("onCar").style.display = "none";
+            document.getElementById("arrivedButton").style.display = "none";
+
+
         }
 
         function on() {
@@ -473,32 +524,32 @@ $user_ID = $_SESSION['login_ID'];
             SSRate = parseInt(<?php echo $SSRate ?>);
             MSRate = parseInt(<?php echo $MSRate ?>);
 
-            FSneed = ((FSRate+10) - balance)
-            SSneed = ((SSRate+10) - balance)
-            MSneed = ((MSRate+10) - balance)
+            FSneed = (FSRate - balance)
+            SSneed = (SSRate - balance)
+            MSneed = (MSRate - balance)
 
-            if (seat === 'ReserveFS' && balance < (FSRate+10)) {
+            if (seat === 'ReserveFS' && balance < FSRate) {
                 document.getElementById('errorContainerFS').innerHTML = "<span style='color: red;'>You need " + FSneed + " more tickets to reserve this seat. </span><br><br>";
                 document.getElementById('errorContainerRS').innerHTML = "";
                 document.getElementById('errorContainerLS').innerHTML = "";
                 document.getElementById('errorContainerMS').innerHTML = "";
                 return false;
             }
-            if (seat === 'ReserveRS' && balance < (SSRate+10)) {
+            if (seat === 'ReserveRS' && balance < SSRate) {
                 document.getElementById('errorContainerRS').innerHTML = "<span style='color: red;'>You need " + SSneed + " more tickets to reserve this seat.</span><br><br>";
                 document.getElementById('errorContainerFS').innerHTML = "";
                 document.getElementById('errorContainerLS').innerHTML = "";
                 document.getElementById('errorContainerMS').innerHTML = "";
                 return false;
             }
-            if (seat === 'ReserveLS' && balance < ($SSRate+10)) {
+            if (seat === 'ReserveLS' && balance < $SSRate) {
                 document.getElementById('errorContainerLS').innerHTML = "<span style='color: red;'>You need " + SSneed + " more tickets to reserve this seat.</span><br><br>";
                 document.getElementById('errorContainerRS').innerHTML = "";
                 document.getElementById('errorContainerFS').innerHTML = "";
                 document.getElementById('errorContainerMS').innerHTML = "";
                 return false;
             }
-            if (seat === 'ReserveMS' && balance < ($MSRate+10)) {
+            if (seat === 'ReserveMS' && balance < $MSRate) {
                 document.getElementById('errorContainerMS').innerHTML = "<span style='color: red;'>You need " + MSneed + " more tickets to reserve this seat.</span><br><br>";
                 document.getElementById('errorContainerRS').innerHTML = "";
                 document.getElementById('errorContainerLS').innerHTML = "";

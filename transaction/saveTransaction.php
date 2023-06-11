@@ -35,10 +35,13 @@ try {
                 // Default value if none of the conditions are met
                 $c_InFee = 0;
             }
+
+
         } else if ($trans_Type == 'Cash-Out') {
             $trans_GcashRefNo = 0;
             $c_InFee = 0;
             $c_OutFee = ceil($trans_Amount / 1000) * 20;
+
         }
 
         // Step 4: Bind the parameters to the statement
